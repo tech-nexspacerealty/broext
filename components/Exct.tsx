@@ -18,6 +18,11 @@ const extSteps = {
   sub: "sub",
 }
 
+const callMethods = {
+  details: process.env.NEXT_PUBLIC_API_URL + 'nexspace.api.project.create_ns_project',
+  subDetails: process.env.NEXT_PUBLIC_API_URL + 'nexspace.api.project.create_ns_project_subdeatils',
+}
+
 export default function RealEstateExtractor(){
   const[f,sf]=useState<File|null>(null)
   const[l,sl]=useState(false)
@@ -98,14 +103,13 @@ export default function RealEstateExtractor(){
   const onUploadInfo=async(data:any)=>{
     try{
       if(!data)return
-      const r=await fetch('http://localhost:4000/api/method/nexspace.api.project.create_ns_project',{
+      const r=await fetch(callMethods.details,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({payload:data})
       })
       if(!r.ok)throw new Error('REQUEST_FAILED')
       const j=await r.json()
-    console.log(j);
     
       if(j.exc||j._server_messages)throw new Error('SERVER_ERROR')
       return j
@@ -117,7 +121,7 @@ export default function RealEstateExtractor(){
   const onUploadSubInfo = async (data: any, proj: string) => {
     try{
       if(!data)return
-      const r=await fetch('http://localhost:4000/api/method/nexspace.api.project.create_ns_project_subdeatils',{
+      const r=await fetch(callMethods.subDetails,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({payload:{...data, proj}})
