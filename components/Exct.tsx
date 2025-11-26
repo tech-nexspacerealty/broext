@@ -9,6 +9,7 @@ import {Upload,FileText,Download,Loader2,CheckCircle,AlertCircle,ChevronLeft,Che
 import {PDFDocument} from "pdf-lib"
 import { dummydata, dummyData2, dummyData3, dummyData4 } from "./data"
 import { unitData1 } from "./units"
+import { toast } from 'react-toastify'
 
 const Document=dynamic(()=>import("react-pdf").then(m=>m.Document),{ssr:false})
 const Page=dynamic(()=>import("react-pdf").then(m=>m.Page),{ssr:false})
@@ -18,9 +19,13 @@ const extSteps = {
   sub: "sub",
 }
 
+
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL + "nexspace.nexspace.frontend_api.brochure.project.";
+
 const callMethods = {
-  details: process.env.NEXT_PUBLIC_API_URL + 'nexspace.api.project.create_ns_project',
-  subDetails: process.env.NEXT_PUBLIC_API_URL + 'nexspace.api.project.create_ns_project_subdeatils',
+  details: baseUrl + 'create_ns_project',
+  subDetails: baseUrl + 'create_ns_project_subdeatils',
 }
 
 export default function RealEstateExtractor(){
@@ -33,6 +38,8 @@ export default function RealEstateExtractor(){
   const[ex,sex]=useState<number[]>([])
   const[step,setStep]=useState<"upload"|"select"|"result">("upload")
   const swiperRef=useRef<any>(null)
+
+  const [ upLoading, setupLoading ] = useState(false);
 
   useEffect(()=>{
     import("react-pdf").then(m=>{
@@ -88,12 +95,13 @@ export default function RealEstateExtractor(){
           return fx(n+1)
         }
       }
-    //   const j=await fx()
-      const j={error:null,content:[{type:"text",text: step === extSteps.details ? dummyData4 : unitData1}]}
+      const j=await fx()
+      // const j={error:null,content:[{type:"text",text: step === extSteps.details ? dummyData4 : unitData1}]}
       if(j.error)throw new Error(j.error)
       const t=j.content.filter((x:any)=>x.type==="text").map((x:any)=>x.text).join("\n").replace(/```json|```/g,"").trim()
       return JSON.parse(t)
     }catch(x:any){
+      toast.error(x?.message||'Something went wrong. Please try again.');
       se(x.message||"An error occurred while extracting data")
     }finally{
       sl(false)
@@ -114,6 +122,7 @@ export default function RealEstateExtractor(){
       if(j.exc||j._server_messages)throw new Error('SERVER_ERROR')
       return j
     }catch(e:any){
+      toast.error(e.message||'Something went wrong. Please try again.');
       return{error:e.message||'UNKNOWN_ERROR'}
     }
   }
@@ -132,19 +141,25 @@ export default function RealEstateExtractor(){
       if(j.exc||j._server_messages)throw new Error('SERVER_ERROR')
       return j
     }catch(e:any){
-      return{error:e.message||'UNKNOWN_ERROR'}
+      toast.error(e?.message||'Something went wrong. Please try again.');
+      return{error:e?.message||'UNKNOWN_ERROR'}
     }
   }
 
   const callExtract = async () => {
     try {
       const dt = await extract(extSteps.details);
-      if(dt) {
+      if(dt && !dt.error) {
         sd(dt)
+        toast.success("Detail page info extracted.");
         const sdt = await extract(extSteps.sub);
-        ssubd(sdt);
+        if(sdt && !sdt.error) {
+          ssubd(sdt);
+          toast.success("Sub Detail page info extracted.");
+        }
       }
     } catch(e: any) {
+      toast.error(e?.message||'Something went wrong. Please try again.');
       return{error:e.message||'UNKNOWN_ERROR'}
     }
   }
@@ -152,13 +167,20 @@ export default function RealEstateExtractor(){
   const callUpload = async (d: any) => {
     try {
       if(!d) return;
+      setupLoading(true);
       const dt = await onUploadInfo(d);
-      if(dt) {
+      toast.success("Detail page info uploaded.");      
+
+      if(dt && !dt.error) {
         const proj = dt?.message?.name || "";
-        await onUploadSubInfo(subd, proj);
+        const sdt = await onUploadSubInfo(subd, proj);
+        if(sdt && !sdt.error) toast.success("Sub Detail page info extracted.");
       }
     } catch(e: any) {
+      toast.error(e?.message||'Something went wrong. Please try again.');
       return{error:e.message||'UNKNOWN_ERROR'}
+    } finally {
+      setupLoading(false);
     }
   }
 
@@ -257,8 +279,24 @@ export default function RealEstateExtractor(){
         {d && subd &&(
           <>
             <div className="flex gap-3">
-              <button onClick={()=>callUpload(d)} type="button" className="bg-blue-600 hover:bg-blue-700 p-2 px-4 rounded-lg font-semibold transition-colors">Upload to Server</button>
-              <button onClick={()=>setStep("select")} type="button" className="bg-gray-700 hover:bg-gray-600 p-2 px-4 rounded-lg transition-colors">Back to Selection</button>
+<button
+  disabled={upLoading}
+  onClick={() => callUpload(d)}
+  type="button"
+  className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 p-2 px-4 rounded-lg font-semibold transition-colors"
+>
+  {upLoading ? 'Uploading' : 'Upload to Server'}
+</button>
+
+<button
+  disabled={upLoading}
+  onClick={() => setStep('select')}
+  type="button"
+  className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-400 p-2 px-4 rounded-lg transition-colors"
+>
+  Back to Selection
+</button>
+
             </div>
             <div className="flex flex-row gap-2">
               <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 w-1/2">
