@@ -62,6 +62,9 @@ import { prompt3 } from './config'
 import { brochurePrompt } from './aiprompt'
 import { unitPrompt } from './unit3'
 
+let testing = process.env.ANTHROPIC_API_KEY || "fake key"
+testing = JSON.stringify({testing});
+
 const a = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 const extSteps = {
@@ -121,6 +124,6 @@ export const POST = async (r: any) => {
           e.message ||
           'Unexpected error'
 
-    return NextResponse.json({ error: "this is a test error." }, { status: s })
+    return NextResponse.json({ error: "this is a test error.`", testing }, { status: s })
   }
 }
