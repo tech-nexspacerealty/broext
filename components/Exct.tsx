@@ -95,8 +95,8 @@ export default function RealEstateExtractor(){
           return fx(n+1)
         }
       }
-      const j=await fx()
-      // const j={error:null,content:[{type:"text",text: step === extSteps.details ? dummyData4 : unitData1}]}
+      // const j=await fx()
+      const j={error:null,content:[{type:"text",text: step === extSteps.details ? dummyData4 : unitData1}]}
       if(j.error)throw new Error(j.error)
       const t=j.content.filter((x:any)=>x.type==="text").map((x:any)=>x.text).join("\n").replace(/```json|```/g,"").trim()
       return JSON.parse(t)
