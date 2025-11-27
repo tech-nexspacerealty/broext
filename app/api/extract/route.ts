@@ -62,10 +62,9 @@ import { prompt3 } from './config'
 import { brochurePrompt } from './aiprompt'
 import { unitPrompt } from './unit3'
 
-let testing = process.env.ANTHROPIC_API_KEY || "fake key"
-testing = JSON.stringify({testing});
+let apiKey = process.env.ANTHROPIC_API_KEY || "";
 
-const a = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+let a: any = null;
 
 const extSteps = {
   details: "details",
@@ -74,7 +73,18 @@ const extSteps = {
 
 export const POST = async (r: any) => {
   try {
-    const { base64Data, step } = await r.json()
+    const { base64Data, step, ANTHROPIC_API_KEY } = await r.json()
+
+    if(!apiKey) apiKey = ANTHROPIC_API_KEY;
+
+    if(apiKey) {
+      a = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    } else {
+      throw new Error('Unable to set Anthropic worker.')
+    }
+
+    if(!a) throw new Error('Unable to set Anthropic worker.')
+
     const b = Buffer.from(base64Data, 'base64')
     if (b.length > 20 * 1024 * 1024) throw new Error('PDF_TOO_LARGE')
 
@@ -124,6 +134,6 @@ export const POST = async (r: any) => {
           e.message ||
           'Unexpected error'
 
-    return NextResponse.json({ error: "this is a test error.`", testing }, { status: s })
+    return NextResponse.json({ error: m }, { status: s })
   }
 }

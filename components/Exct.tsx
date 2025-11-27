@@ -19,8 +19,7 @@ const extSteps = {
   sub: "sub",
 }
 
-console.log('>>>>>>> ; ',  process.env.NEXT_PUBLIC_API_URL);
-
+const ANTHROPIC_API_KEY = process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || "";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL + "nexspace.nexspace.frontend_api.brochure.project.";
 
@@ -83,7 +82,7 @@ export default function RealEstateExtractor(){
           const res=await fetch("/api/extract",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({base64Data:b, step})
+            body:JSON.stringify({base64Data:b, step, ANTHROPIC_API_KEY})
           })
           if(!res.ok){
             const err=await res.json()
