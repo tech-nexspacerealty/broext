@@ -78,7 +78,7 @@ export const POST = async (r: any) => {
     if(!apiKey) apiKey = ANTHROPIC_API_KEY;
 
     if(apiKey) {
-      a = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+      a = new Anthropic({ apiKey })
     } else {
       throw new Error('Unable to set Anthropic worker.')
     }
