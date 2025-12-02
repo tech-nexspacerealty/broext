@@ -151,8 +151,8 @@ export default function RealEstateExtractor(){
       const b=await createFilteredPdf()
 
       const estimatedSize = (b.length * 3) / 4
-      if (estimatedSize > 20 * 1024 * 1024) {
-        toast.error("PDF too large. Maximum 20MB allowed.");
+      if (estimatedSize > 25 * 1024 * 1024) {
+        toast.error("PDF too large. Maximum 25MB allowed.");
         return;
       }
 
@@ -212,7 +212,7 @@ export default function RealEstateExtractor(){
               <div className="border-2 border-dashed border-gray-600 rounded-xl h-60 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-700/30 hover:border-blue-500 transition" onClick={()=>document.getElementById("f")?.click()}>
                 <Upload className="w-12 h-12 text-blue-400 mb-4"/>
                 <p className="text-sm text-gray-300">Click or drag PDF</p>
-                <p className="text-sm font-bold underline">PDF size must less than or equal to 20MB</p>
+                <p className="text-sm font-bold underline">PDF size must less than or equal to 25MB</p>
                 <input id="f" type="file" className="hidden" accept=".pdf" onChange={onF}/>
               </div>
               {e&&<div className="mt-4 p-4 bg-red-900/40 border border-red-700 rounded-xl flex gap-3"><AlertCircle className="w-5 h-5 text-red-400"/><p>{e}</p></div>}
