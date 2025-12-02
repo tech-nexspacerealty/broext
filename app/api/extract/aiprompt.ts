@@ -142,7 +142,7 @@ export const brochureJSON2 = `
     "totalBasementFloors": null
   },
 
-  --- floor sequence is: ..., B2, B1, G, 1, 2, ...
+  --- floor sequence is: ..., B2, B1, G, 1, 2, ...: Don't use as full name like 'Ground' or 'basement', must be in the suggested format
   "floorsInfo": {
     "habitableFloors": [string], // floor number
     "amenitiesFloors": [string], // floor number
