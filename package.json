@@ -6,12 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "deploy": "scp -i ./brochure.pem -r .next ubuntu@ec2-43-204-98-183.ap-south-1.compute.amazonaws.com:/home/ubuntu/broext/.next"
+    "lint": "eslint"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",
-    "@vercel/blob": "^2.0.0",
     "lucide-react": "^0.554.0",
     "next": "16.0.3",
     "pdf-lib": "^1.17.1",
