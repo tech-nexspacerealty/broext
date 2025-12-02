@@ -170,9 +170,9 @@ export const POST = async (r: any) => {
 
     // Check size before processing
     const estimatedSize = (base64Data.length * 3) / 4
-    if (estimatedSize > 20 * 1024 * 1024) {
+    if (estimatedSize > 25 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'PDF too large. Maximum 20MB allowed.' },
+        { error: 'PDF too large. Maximum 25MB allowed.' },
         { status: 413 }
       )
     }
